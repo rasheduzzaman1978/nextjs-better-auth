@@ -7,22 +7,12 @@ import { useSession, signOut } from "@/lib/auth-client";
 
 const Navbar = () => {
   const { data, isPending } = useSession();
-
-  if (isPending) {
-    return (
-      <nav className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
-        <header className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <p className="text-xl font-bold">ACME</p>
-        </header>
-      </nav>
-    );
-  }
-
   const user = data?.user;
 
   return (
     <nav className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
       <header className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
+        
         {/* Left Side */}
         <div className="flex items-center gap-6">
           <Link
@@ -56,20 +46,28 @@ const Navbar = () => {
 
         {/* Right Side */}
         <div className="flex items-center gap-3">
-          {user ? (
-            <>
-              <p className="hidden text-sm font-medium text-gray-700 md:block">
-                Welcome, {user.name}
-              </p>
+          {/* 👇 Structure same রাখা হয়েছে */}
+          
+          {/* Username */}
+          <p className="hidden text-sm font-medium text-gray-700 md:block">
+            {isPending
+              ? "Loading..."
+              : user
+              ? `Welcome, ${user.name}`
+              : ""}
+          </p>
 
-              <Button
-                color="danger"
-                variant="flat"
-                onPress={() => signOut()}
-              >
-                Sign Out
-              </Button>
-            </>
+          {/* Auth Buttons */}
+          {isPending ? (
+            <div className="h-9 w-20 rounded bg-gray-200 animate-pulse" />
+          ) : user ? (
+            <Button
+              color="danger"
+              variant="flat"
+              onPress={() => signOut()}
+            >
+              Sign Out
+            </Button>
           ) : (
             <>
               <Link as={NextLink} href="/auth/signin" color="foreground">
@@ -77,10 +75,8 @@ const Navbar = () => {
               </Link>
 
               <Link as={NextLink} href="/auth/signup">
-  <Button color="primary">
-    Sign Up
-  </Button>
-</Link>
+                <Button color="primary">Sign Up</Button>
+              </Link>
             </>
           )}
         </div>
