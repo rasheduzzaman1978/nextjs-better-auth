@@ -2,7 +2,7 @@
 
 import React from "react";
 import NextLink from "next/link";
-import { Button, Link } from "@heroui/react";
+import { Button, Link as HeroLink } from "@heroui/react";
 import { useSession, signOut } from "@/lib/auth-client";
 
 const Navbar = () => {
@@ -10,74 +10,82 @@ const Navbar = () => {
   const user = data?.user;
 
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+    <nav className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-gray-100">
       <header className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         
-        {/* Left Side */}
+        {/* Left Side: Logo & Links */}
         <div className="flex items-center gap-6">
-          <Link
-            as={NextLink}
-            href="/"
-            className="text-xl font-bold text-black"
-          >
+          <NextLink href="/" className="text-xl font-bold text-black no-underline">
             ACME
-          </Link>
+          </NextLink>
 
-          <ul className="hidden items-center gap-4 md:flex">
+          <ul className="hidden items-center gap-6 md:flex">
             <li>
-              <Link as={NextLink} href="/" color="foreground">
+              <NextLink href="/" className="text-sm font-medium text-gray-600 hover:text-black no-underline">
                 Home
-              </Link>
+              </NextLink>
             </li>
-
             <li>
-              <Link as={NextLink} href="/dashboard" color="foreground">
+              <NextLink href="/dashboard" className="text-sm font-medium text-gray-600 hover:text-black no-underline">
                 Dashboard
-              </Link>
+              </NextLink>
             </li>
-
             <li>
-              <Link as={NextLink} href="/about" color="foreground">
+              <NextLink href="/about" className="text-sm font-medium text-gray-600 hover:text-black no-underline">
                 About
-              </Link>
+              </NextLink>
             </li>
           </ul>
         </div>
 
-        {/* Right Side */}
+        {/* Right Side: User Info & Auth Buttons */}
         <div className="flex items-center gap-3">
-          {/* 👇 Structure same রাখা হয়েছে */}
           
-          {/* Username */}
-          <p className="hidden text-sm font-medium text-gray-700 md:block">
-            {isPending
-              ? "Loading..."
-              : user
-              ? `Welcome, ${user.name}`
-              : ""}
-          </p>
+          {/* Loading Skeleton */}
+          {isPending && (
+            <div className="h-9 w-24 rounded-lg bg-gray-200 animate-pulse" />
+          )}
 
-          {/* Auth Buttons */}
-          {isPending ? (
-            <div className="h-9 w-20 rounded bg-gray-200 animate-pulse" />
-          ) : user ? (
-            <Button
-              color="danger"
-              variant="flat"
-              onPress={() => signOut()}
-            >
-              Sign Out
-            </Button>
-          ) : (
-            <>
-              <Link as={NextLink} href="/auth/signin" color="foreground">
-                Sign In
-              </Link>
+          {/* If User is Logged In */}
+          {!isPending && user && (
+            <div className="flex items-center gap-4">
+              <p className="hidden text-sm font-medium text-gray-700 md:block">
+                Welcome, {user.name}
+              </p>
+              <Button
+                color="danger"
+                variant="danger"
+                onPress={() => signOut()}
+                size="sm"
+              >
+                Sign Out
+              </Button>
+            </div>
+          )}
 
-              <Link as={NextLink} href="/auth/signup">
-                <Button color="primary">Sign Up</Button>
-              </Link>
-            </>
+          {/* If User is NOT Logged In */}
+          {!isPending && !user && (
+            <div className="flex items-center gap-2">
+              <NextLink href="/auth/signin">
+                <Button
+                  color="secondary"
+                  variant="secondary"
+                  size="sm"
+                >
+                  Sign In
+                </Button>
+              </NextLink>
+
+              <NextLink href="/auth/signup">
+                <Button
+                  color="primary"
+                  variant="primary"
+                  size="sm"
+                >
+                  Sign Up
+                </Button>
+              </NextLink>
+            </div>
           )}
         </div>
       </header>
